@@ -1,18 +1,47 @@
+import { NavLink } from "react-router-dom"
+
 function Sidebar() {
+
+  const linkStyle =
+    "block py-2 px-3 rounded hover:bg-gray-700"
+
+  const activeStyle =
+    "bg-blue-600 text-white"
+
   return (
     <div className="w-64 bg-gray-900 text-white min-h-screen p-6">
       <h2 className="text-2xl font-bold mb-8">AI Analytics</h2>
 
-      <nav className="space-y-4">
-        <div className="hover:text-blue-400 cursor-pointer">
+      <nav className="space-y-3">
+
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            linkStyle + " " + (isActive ? activeStyle : "")
+          }
+        >
           Dashboard
-        </div>
-        <div className="hover:text-blue-400 cursor-pointer">
+        </NavLink>
+
+        <NavLink
+          to="/users"
+          className={({ isActive }) =>
+            linkStyle + " " + (isActive ? activeStyle : "")
+          }
+        >
           Users
-        </div>
-        <div className="hover:text-blue-400 cursor-pointer">
+        </NavLink>
+
+        <NavLink
+          to="/model"
+          className={({ isActive }) =>
+            linkStyle + " " + (isActive ? activeStyle : "")
+          }
+        >
           Model
-        </div>
+        </NavLink>
+
       </nav>
     </div>
   )
