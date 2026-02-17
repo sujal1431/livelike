@@ -1,28 +1,29 @@
-from .models import UserEngagement
-from .engagement import calculate_engagement
 from .ml_model import predict_churn
+from .models import UserEngagement
+
+BATCH_SIZE = 500
 
 
-BATCH_SIZE = 500   # safe for SQLite
+def calculate_engagement_score(user):
+    """Calculate engagement score from usage and recency features."""
+    score = (
+        user.session_time * 0.5
+        + user.pages_visited * 2
+        + user.clicks * 0.1
+        - user.last_login_gap * 1.5
+    )
+    return max(score, 0.0)
 
 
 def process_all_users():
-
+    """Compute analytics fields for all users and persist in batches."""
     users = list(UserEngagement.objects.all())
-
     for user in users:
-        user.engagement_score = calculate_engagement(user)
+        user.engagement_score = calculate_engagement_score(user)
         user.churn_probability = predict_churn(user)
 
-    # ---------- BATCH UPDATE ----------
-    total = len(users)
+    for start in range(0, len(users), BATCH_SIZE):
+        batch = users[start : start + BATCH_SIZE]
+        UserEngagement.objects.bulk_update(batch, ["engagement_score", "churn_probability"])
 
-    for i in range(0, total, BATCH_SIZE):
-        batch = users[i:i + BATCH_SIZE]
-
-        UserEngagement.objects.bulk_update(
-            batch,
-            ["engagement_score", "churn_probability"]
-        )
-
-    return total
+    return len(users)

@@ -1,6 +1,9 @@
 from django.db import models
 
+
 class UserEngagement(models.Model):
+    """Persisted engagement features and derived analytics for each user."""
+
     session_time = models.FloatField(help_text="Time spent in minutes")
     pages_visited = models.IntegerField()
     clicks = models.IntegerField()
